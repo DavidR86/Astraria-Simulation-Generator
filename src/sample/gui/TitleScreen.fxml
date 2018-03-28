@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<VBox fx:id="mainBox" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="259.0" prefWidth="413.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controllers.TitleScreenController">
+   <children>
+      <ImageView blendMode="MULTIPLY" fitHeight="103.0" fitWidth="545.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../assets/logo1.png" />
+         </image>
+      </ImageView>
+      <Separator prefWidth="200.0" />
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Simulation generation tool">
+         <font>
+            <Font name="Arial Bold" size="18.0" />
+         </font>
+      </Text>
+      <Separator prefWidth="200.0" />
+      <Button fx:id="newSimulationButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#hello" text="Generate new simulation">
+         <VBox.margin>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="30.0" />
+         </VBox.margin>
+      </Button>
+      <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Open existing simulation file">
+         <VBox.margin>
+            <Insets left="20.0" right="20.0" />
+         </VBox.margin>
+      </Button>
+   </children>
+</VBox>
