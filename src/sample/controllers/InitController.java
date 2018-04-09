@@ -201,6 +201,9 @@ public class InitController {
                     controller.progressBar.setProgress((patcher.getTotalBytes()-patcher.getRemainingBytes())/patcher.getTotalBytes());
                     controller.stat5.setText((patcher.getRemainingBytes()/4)+" / "+patcher.getTotalBytes()/4+" accelerations");
                 }else {
+
+                    controller.stat2.setText(multiThreadAlgorithm.timePerCycle()+" seconds");
+
                     double progressPercent = multiThreadAlgorithm.getL()  /  (Config.simDuration*60D);
                     controller.progressBar.setProgress((progressPercent));
                     controller.stat1.setText(multiThreadAlgorithm.avgCPF()+" cycles");
@@ -246,7 +249,6 @@ public class InitController {
 
                         controller.stat5.setText(convertedTime + " "+units);
                     }
-
                 }
 
                 secondsElapsed++;

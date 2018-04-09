@@ -58,7 +58,8 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
 
         private double avgCPF;
         private long cpf;
-        private double timePerC;
+        private volatile double timePerC;
+        private double lastTimeMeasure;
 
 
 
@@ -102,6 +103,8 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
             avgCPF=0;
 
 
+
+
             accelInit();
             timer = (double) System.nanoTime();
             this.writer = writer;
@@ -126,8 +129,9 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
 
                 //
 
-                float delta = (float) ( getDelta() * simSpeed);
 
+                float delta = (float) ( getDelta() * simSpeed);
+                lastTimeMeasure=System.nanoTime();
 
                 for (int i = 0; i < x.length; i++) {
 
@@ -150,6 +154,8 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
                 updateBodies();
 
                 cpf++;
+
+                timePerC = (System.nanoTime()-lastTimeMeasure)/1000000000.0;
 
                 if (!fixedDelta){
                     if (((double) System.nanoTime())-timer>=16666666.6667){
