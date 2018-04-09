@@ -8,17 +8,14 @@ package sample.fileManagement;/*
 */
 
 import sample.algorithms.MultiThreadAlgorithm;
-import sample.fileManagement.helpers.AppendableObjectOutputStream;
+import sample.fileManagement.helpers.AppendableDataOutputStream;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
+import java.io.*;
 
 public class AccelerationPatcher {
 
         private FileInputStream ifStream;
-        private ObjectInputStream stream;
+        private DataInputStream stream;
         private float average;
         private File path;
         private int totalBytes;
@@ -32,7 +29,7 @@ public class AccelerationPatcher {
 
             try {
                 FileInputStream ifStream = new FileInputStream(path);
-                ObjectInputStream stream = new ObjectInputStream(ifStream);
+                DataInputStream stream = new DataInputStream(ifStream);
 
                 stream.readShort();
                 stream.readInt();
@@ -94,8 +91,9 @@ public class AccelerationPatcher {
 
         private void appendMaxAndMin(float variance, File path) throws Exception{
 
+            /*
             FileOutputStream ofStream = new FileOutputStream(path, true);
-            AppendableObjectOutputStream oStream = new AppendableObjectOutputStream(ofStream);
+            AppendableDataOutputStream oStream = new AppendableDataOutputStream(ofStream);
 
             oStream.writeFloat(average+variance);
             oStream.writeFloat(average-variance);
@@ -108,6 +106,12 @@ public class AccelerationPatcher {
 
             oStream.close();
             ofStream.close();
+            */
 
+            RandomAccessFile fileAppender = new RandomAccessFile(path, "rw");
+            fileAppender.seek(fileAppender.length()-8);
+            fileAppender.writeFloat(average+variance);
+            fileAppender.writeFloat(average-variance);
+            fileAppender.close();
         }
     }

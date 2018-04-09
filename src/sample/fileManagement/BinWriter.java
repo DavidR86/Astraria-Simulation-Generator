@@ -11,6 +11,7 @@ package sample.fileManagement;/*
 
 import sample.algorithms.MultiThreadAlgorithm;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
@@ -20,7 +21,7 @@ public class BinWriter implements Runnable {
 
     private LinkedBlockingQueue<Float> queue;
     private boolean terminate;
-    private ObjectOutputStream stream;
+    private DataOutputStream stream;
 
     private final Object lock;
     private FileOutputStream fStream;
@@ -120,6 +121,8 @@ public class BinWriter implements Runnable {
             }
 
             try{
+                stream.writeFloat(0);
+                stream.writeFloat(0);
                 stream.close();
                 fStream.close();
 
@@ -166,7 +169,7 @@ public class BinWriter implements Runnable {
 
             fStream = new FileOutputStream(output);
 
-            stream = new ObjectOutputStream(fStream);
+            stream = new DataOutputStream(fStream);
 
             return true;
         }catch (Exception e){
