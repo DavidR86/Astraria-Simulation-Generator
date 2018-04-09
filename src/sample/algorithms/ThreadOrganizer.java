@@ -99,19 +99,23 @@ public abstract class ThreadOrganizer {
             if (fixedDelta){
                 return deltaConst;
             }else {
-                double currTime = (double) System.nanoTime()/1000000000.0;
-                if(lastTime==0){
-                    lastTime = currTime;
-                }
-                double temp = currTime - lastTime;
-                lastTime = currTime;
-
-                this.tmp = temp;
-                return temp;
+               return getRealDelta();
             }
 
 
 
+        }
+
+        public double getRealDelta(){
+            double currTime = (double) System.nanoTime()/1000000000.0;
+            if(lastTime==0){
+                lastTime = currTime;
+            }
+            double temp = currTime - lastTime;
+            lastTime = currTime;
+
+            this.tmp = temp;
+            return temp;
         }
 
 
