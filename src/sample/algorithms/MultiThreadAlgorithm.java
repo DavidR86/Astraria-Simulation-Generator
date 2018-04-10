@@ -405,7 +405,7 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
     private void parseAcceleration(int current, int other, float pX, float pY, float pZ) {
 
 
-        float temporary = m / (cubed((float) Math.sqrt(square(x[other] - pX) + square(y[other] - pY) + square(z[other] - pZ))+smoothingFactor));
+        float temporary = m / (cubed((float) Math.sqrt(square(x[other] - pX) + square(y[other] - pY) + square(z[other] - pZ)+smoothingFactor)));
 
 
 
