@@ -30,6 +30,8 @@ public class GenerationController {
     public Text stat4;
     public Text stat5;
     public Text timeRemainingLabel;
+    public Button backupButton;
+    public Button saveAndExitButton;
 
     private Main main;
 
@@ -75,4 +77,23 @@ public class GenerationController {
         this.writerThread=writerThread;
     }
 
+    public void doBackup(ActionEvent actionEvent) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Doing a backup may take some time on larger simulations. Do you want to proceed?");
+        alert.showAndWait()
+                .filter(response -> response == ButtonType.OK)
+                .ifPresent(response -> {
+                    //backup
+                //    backup();
+                });
+    }
+
+    public void saveAndExit(ActionEvent actionEvent) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to interrupt the generation process?");
+        alert.showAndWait()
+                .filter(response -> response == ButtonType.OK)
+                .ifPresent(response -> {
+                    //backup
+                    exit();
+                });
+    }
 }
