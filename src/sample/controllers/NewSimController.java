@@ -182,12 +182,12 @@ public class NewSimController {
 
         try {
             if (smoothingField.getText().isEmpty()){
-                Config.smoothingConstant=1;
+                Config.smoothingConstant=0;
             }else {
                 Config.smoothingConstant=Float.parseFloat(smoothingField.getText());
             }
         }catch (Exception e){
-            Config.smoothingConstant=1;
+            Config.smoothingConstant=0;
             smoothingField.clear();
         }
 
