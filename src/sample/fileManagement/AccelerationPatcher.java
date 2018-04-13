@@ -53,7 +53,7 @@ public class AccelerationPatcher {
             return totalBytes;
         }
 
-        public synchronized int getRemainingBytes(){
+        public int getRemainingBytes(){
             return remainingBytes;
         }
 

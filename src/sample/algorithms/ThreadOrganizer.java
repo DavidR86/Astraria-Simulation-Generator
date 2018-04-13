@@ -15,7 +15,6 @@ public abstract class ThreadOrganizer {
 
         private boolean terminate = false;
         private double lastTime;
-        protected final Object lock;
 
         protected boolean fixedDelta;
 
@@ -32,8 +31,7 @@ public abstract class ThreadOrganizer {
         //public static boolean PRINT_CALC_SEC = true;
 
 
-        public ThreadOrganizer(Object lock, boolean fixedDelta, double cycles, double duration) {
-            this.lock = lock;
+        public ThreadOrganizer(boolean fixedDelta, double cycles, double duration) {
             this.fixedDelta = fixedDelta;
             this.cycles = cycles;
             this.duration = duration;
@@ -119,7 +117,7 @@ public abstract class ThreadOrganizer {
         }
 
 
-    public synchronized double getL(){
+    public double getL(){
             return l;
     }
 
