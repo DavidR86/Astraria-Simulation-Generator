@@ -349,7 +349,7 @@ public class InitController {
             @Override
             public void run() {
                 msg5.setText("      { "+MultiThreadAlgorithm.getProgress()+" / "+k+" bodies initialized }");
-                progressBar.setProgress((MultiThreadAlgorithm.getProgress().get() /  (double) (k*2))+0.3);
+                progressBar.setProgress((MultiThreadAlgorithm.getProgress() /  (double) (k*2))+0.3);
             }
         }, 0, 1000);
         /*
@@ -378,7 +378,7 @@ public class InitController {
         */
 
         //double t = System.nanoTime();
-        multiThreadAlgorithm = new MultiThreadAlgorithm(new Object(), x,y,z,vx,vy,vz,m,Config.simSpeed, writer, Config.simDuration, Config.constantCPS, Config.cpsPerFrame, Config.smoothingConstant);
+        multiThreadAlgorithm = new MultiThreadAlgorithm( x,y,z,vx,vy,vz,m,Config.simSpeed, writer, Config.simDuration, Config.constantCPS, Config.cpsPerFrame, Config.smoothingConstant);
         //System.out.println(System.nanoTime()-t);
         //thread.interrupt();
         initProgressUpdate.cancel();

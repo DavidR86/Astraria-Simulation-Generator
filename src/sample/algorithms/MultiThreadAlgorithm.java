@@ -61,6 +61,8 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
         private volatile double timePerC;
         private double lastTimeMeasure;
 
+        private static int progress;
+
 
 
 
@@ -107,7 +109,7 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
 
             avgCPF=0;
 
-
+            progress=0;
 
 
             accelInit();
@@ -393,6 +395,7 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
                 az [i] *= Config.grav;
 
                 //progress.incrementAndGet();
+                progress++;
 
             }
 
@@ -422,6 +425,6 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
     }
 
     public static int getProgress(){
-        return 1;
+        return progress;
     }
 }
