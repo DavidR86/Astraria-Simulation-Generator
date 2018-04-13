@@ -13,7 +13,7 @@
 <children>
       <ImageView fitHeight="49.0" fitWidth="348.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../assets/logo2.png" />
+            <Image url="@../assets/ASTRARIA%20LOGO-01-1.png" />
          </image>
       </ImageView>
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Continue recovered simulation">

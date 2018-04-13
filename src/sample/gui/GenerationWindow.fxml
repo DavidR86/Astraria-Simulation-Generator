@@ -9,12 +9,15 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="TOP_CENTER" prefHeight="387.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controllers.GenerationController">
+<VBox alignment="TOP_CENTER" prefHeight="390.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controllers.GenerationController">
 <children>
       <ImageView fitHeight="49.0" fitWidth="348.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../assets/logo2.png" />
+            <Image url="@../assets/ASTRARIA%20LOGO-01-1.png" />
          </image>
+         <VBox.margin>
+            <Insets bottom="5.0" top="10.0" />
+         </VBox.margin>
       </ImageView>
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Generate new simulation">
          <font>
