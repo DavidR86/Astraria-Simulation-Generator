@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class MultiThreadAlgorithm extends ThreadOrganizer{
 
-    private static AtomicInteger progress = new AtomicInteger(0);
+    //private static AtomicInteger progress = new AtomicInteger(0);
 
 
     private int amountOfThreads;
@@ -66,9 +66,14 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
 
 
 
-    public MultiThreadAlgorithm(Object lock, float[] x, float[] y, float[] z, float[] vx, float[] vy, float[] vz, float m, float simSpeed, BinWriter writer, double duration, boolean fixedDelta, double cycles, float smoothingFactor){
-            super(lock, fixedDelta, cycles, duration);
-            this.amountOfThreads = Runtime.getRuntime().availableProcessors();
+    public MultiThreadAlgorithm( float[] x, float[] y, float[] z, float[] vx, float[] vy, float[] vz, float m, float simSpeed, BinWriter writer, double duration, boolean fixedDelta, double cycles, float smoothingFactor){
+            super(fixedDelta, cycles, duration);
+
+            if (Runtime.getRuntime().availableProcessors()==1){
+                this.amountOfThreads = Runtime.getRuntime().availableProcessors();
+            }else {
+                this.amountOfThreads = Runtime.getRuntime().availableProcessors()-1;
+            }
 
             executorService = Executors.newFixedThreadPool(this.amountOfThreads);
             int k = x.length;
@@ -115,14 +120,6 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
 
         @Override
         protected void runAlgorithm() {
-
-
-
-            synchronized (lock) {
-
-
-
-
 
 
                 CountDownLatch countDownLatch = new CountDownLatch(x.length);
@@ -203,6 +200,7 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
                             writer.getQueue().add(ax[a]);
                             writer.getQueue().add(ay[a]);
                             writer.getQueue().add(az[a]);
+
                         }
 
 
@@ -227,7 +225,7 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
 
 
 
-            }
+
 
         }
 
@@ -394,7 +392,7 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
                 ay [i] *= Config.grav;
                 az [i] *= Config.grav;
 
-                progress.incrementAndGet();
+                //progress.incrementAndGet();
 
             }
 
@@ -423,7 +421,7 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
         return x*x;
     }
 
-    public static synchronized AtomicInteger getProgress(){
-        return progress;
+    public static int getProgress(){
+        return 1;
     }
 }
