@@ -5,10 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import sample.controllers.GenerationController;
-import sample.controllers.InitController;
-import sample.controllers.NewSimController;
-import sample.controllers.TitleScreenController;
+import sample.controllers.*;
 
 public class Main extends Application {
 
@@ -18,6 +15,7 @@ public class Main extends Application {
     private Scene titleScreen;
     private Scene initScreen;
     private Scene generationScreen;
+    private Scene backupScreen;
 
     private Thread thread;
 
@@ -34,6 +32,7 @@ public class Main extends Application {
         FXMLLoader loader2 = new FXMLLoader(getClass().getResource("gui/NewSimulation.fxml"));
         FXMLLoader loader3 = new FXMLLoader(getClass().getResource("gui/InitializeWindow.fxml"));
         FXMLLoader loader4 = new FXMLLoader(getClass().getResource("gui/GenerationWindow.fxml"));
+        FXMLLoader loader5 = new FXMLLoader(getClass().getResource("gui/OpenExistingSimulation.fxml"));
 
         newSimulation = new Scene(loader2.load());
         Parent root = loader.load();
@@ -41,6 +40,7 @@ public class Main extends Application {
 
         initScreen = new Scene(loader3.load());
         generationScreen = new Scene(loader4.load());
+        backupScreen = new Scene(loader5.load());
 
         primaryStage.setTitle("Astraria Generator Tool");
         primaryStage.setResizable(false);
@@ -59,6 +59,9 @@ public class Main extends Application {
 
         initController = loader3.getController();
         initController.setMain(this);
+
+        BackupScreenController backupScreenController = loader5.getController();
+        backupScreenController.setMain(this);
 
 
         primaryStage.show();
@@ -115,6 +118,14 @@ public class Main extends Application {
             thread.start();
 
 
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void changeToBackupScreen(){
+        try {
+            primaryStage.setScene(backupScreen);
         }catch (Exception e){
             e.printStackTrace();
         }
