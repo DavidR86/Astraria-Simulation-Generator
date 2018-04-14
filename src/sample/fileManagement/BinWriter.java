@@ -11,10 +11,7 @@ package sample.fileManagement;/*
 
 import sample.algorithms.MultiThreadAlgorithm;
 
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class BinWriter implements Runnable {
@@ -84,12 +81,9 @@ public class BinWriter implements Runnable {
                         if (i >= 3) {
                             i = 0;
 
+                           // System.out.println(queue.size());
 
-                            float ax = queue.take();
-                            float ay = queue.take();
-                            float az = queue.take();
-
-                            float currAcc = (float) Math.sqrt(MultiThreadAlgorithm.square(ax) + MultiThreadAlgorithm.square(ay) + MultiThreadAlgorithm.square(az));
+                            float currAcc = queue.take();
 
 
                             avgAcceleration = (avgAcceleration*u+currAcc)/(u+1);
@@ -108,6 +102,7 @@ public class BinWriter implements Runnable {
                         } else {
                             float f = queue.take();
                             stream.writeFloat(f);
+
                             i++;
                         }
 
@@ -169,7 +164,7 @@ public class BinWriter implements Runnable {
 
             fStream = new FileOutputStream(output);
 
-            stream = new DataOutputStream(fStream);
+            stream = new DataOutputStream(new BufferedOutputStream(fStream));
 
             return true;
         }catch (Exception e){

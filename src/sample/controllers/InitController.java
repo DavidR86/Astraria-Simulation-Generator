@@ -99,14 +99,14 @@ public class InitController {
     }
 
     public void startSimulation(ActionEvent actionEvent) {
-        writerThread.start();
+
 
         GenerationController controller = main.ChangeToGenerationScreen();
         controller.setThreadAlgorithm(multiThreadAlgorithm);
         controller.setWriter(writer);
         controller.setWriterThread(writerThread);
         Timer generationStatusUpdate = new Timer("generationStatusUpdate", true);
-
+        /*8
         Task<Void> algorithmThread = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
@@ -139,10 +139,54 @@ public class InitController {
                 return null;
             }
         };
-        Thread algorithmThreadParent = new Thread(algorithmThread);
+        */
+        Thread algorithmThreadParent = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                controller.stat3.setText("(1/3) : Simulation generation");
+                multiThreadAlgorithm.run();
+                controller.stat3.setText("(2/3) : Finishing to write data");
+                writer.terminate();
+
+                synchronized (writer.getLock()){
+                    writerThread.interrupt();
+
+                }
+                doneGenerating=true;
+                patcher = new AccelerationPatcher(writer.getAvgAcceleration(), Config.outputFile);
+                controller.timeRemainingLabel.setText("Progress :");
+                controller.stat3.setText("(3/3) : Automatic particle colorization");
+
+                try {
+                    patcher.start();
+
+                    generationStatusUpdate.cancel();
+                    controller.progressBar.setProgress(1);
+                    controller.stat5.setText((patcher.getTotalBytes()/4)+" / "+patcher.getTotalBytes()/4+" accelerations");
+                    Thread.currentThread().interrupt();
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Thread.currentThread().interrupt();
+                }
+            }
+        });
         algorithmThreadParent.setDaemon(true);
         algorithmThreadParent.setName("algortihmThread");
+        writerThread.start();
         algorithmThreadParent.start();
+        Thread isEnded = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    algorithmThreadParent.join();
+                    exit();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+        isEnded.start();
 
         /*
         Thread algorithmThread = new Thread(new Runnable() {
@@ -174,7 +218,7 @@ public class InitController {
 
             }
         });
-        */
+
         algorithmThread.setOnFailed(e -> {
             //Alert alert = new Alert(Alert.AlertType.ERROR, "Could not locate simulation output file. It is either missing or corrupt.");
             //alert.showAndWait();
@@ -186,7 +230,7 @@ public class InitController {
             alert.showAndWait();
             exit();
         });
-
+        */
 
 
         generationStatusUpdate.schedule(new TimerTask() {
@@ -196,10 +240,9 @@ public class InitController {
             @Override
             public void run() {
 
-
                 if (doneGenerating){
                     controller.progressBar.setProgress((patcher.getTotalBytes()-patcher.getRemainingBytes())/patcher.getTotalBytes());
-                    controller.stat5.setText((patcher.getRemainingBytes()/4)+" / "+patcher.getTotalBytes()/4+" accelerations");
+                    controller.stat5.setText((patcher.getTotalBytes()-patcher.getRemainingBytes()/4)+" / "+patcher.getTotalBytes()/4+" accelerations");
                 }else {
 
                     controller.stat2.setText(multiThreadAlgorithm.timePerCycle()+" seconds");
