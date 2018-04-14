@@ -24,4 +24,8 @@ public class TitleScreenController {
     public void setMain(Main main){
         this.main = main;
     }
+
+    public void openBackup(ActionEvent actionEvent) {
+        main.ChangeToBackupScreen();
+    }
 }

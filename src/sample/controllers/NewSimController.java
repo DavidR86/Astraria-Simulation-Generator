@@ -97,6 +97,7 @@ public class NewSimController {
 
     public void startSimulation(ActionEvent actionEvent) {
         if (validate()){
+            Config.backup=false;
             main.ChangeToInitScreen();
         }else {
             Alert alert = new Alert(Alert.AlertType.ERROR, "One or more required fields have not been correctly filled.");
