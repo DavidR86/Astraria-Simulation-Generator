@@ -66,8 +66,6 @@ public class Main extends Application {
 
         primaryStage.show();
 
-
-
     }
 
 
@@ -123,7 +121,7 @@ public class Main extends Application {
         }
     }
 
-    public void changeToBackupScreen(){
+    public void ChangeToBackupScreen(){
         try {
             primaryStage.setScene(backupScreen);
         }catch (Exception e){

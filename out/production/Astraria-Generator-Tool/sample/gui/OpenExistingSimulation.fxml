@@ -9,7 +9,7 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="TOP_CENTER" prefHeight="387.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controllers.BackupScreenController">
+<VBox alignment="TOP_CENTER" prefHeight="375.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controllers.BackupScreenController">
 <children>
       <ImageView fitHeight="49.0" fitWidth="348.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -85,7 +85,7 @@
                </VBox.margin>
             </GridPane>
             <Separator prefWidth="200.0" />
-            <TextArea fx:id="backupStatusField" editable="false" prefHeight="85.0" prefWidth="640.0" scrollTop="100.0" text="=Recovery status=">
+            <TextArea fx:id="backupStatusField" editable="false" prefHeight="85.0" prefWidth="640.0" scrollTop="100.0" text="Recovery status:">
                <VBox.margin>
                   <Insets bottom="10.0" left="50.0" right="50.0" top="10.0" />
                </VBox.margin>

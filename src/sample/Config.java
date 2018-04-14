@@ -26,6 +26,8 @@ public class Config {
 
     public static float bodyScale=1;
 
+    public static boolean backup = false;
+
     public static boolean allSet() {
 
         return  (durationSet&&inputFile.exists()&&outputFile.getParentFile().exists()&&cpsSet);
