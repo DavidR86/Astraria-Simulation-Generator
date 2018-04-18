@@ -146,8 +146,8 @@
                               </HBox>
                               <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
                                  <children>
-                                    <CheckBox mnemonicParsing="false" text="Save progress every" />
-                                    <TextField disable="true" prefHeight="27.0" prefWidth="59.0">
+                                    <CheckBox fx:id="autoSaveCheckbox" mnemonicParsing="false" onAction="#saveProgressField" text="Save progress every" />
+                                    <TextField fx:id="autoSaveTextField" disable="true" prefHeight="27.0" prefWidth="59.0">
                                        <HBox.margin>
                                           <Insets left="5.0" right="5.0" />
                                        </HBox.margin>

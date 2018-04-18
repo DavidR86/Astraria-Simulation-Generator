@@ -126,20 +126,20 @@
       <Separator prefWidth="200.0" />
       <HBox alignment="BOTTOM_RIGHT" prefHeight="37.0" prefWidth="640.0">
          <children>
-            <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#goBack" text="Interrupt">
-               <HBox.margin>
-                  <Insets right="20.0" />
-               </HBox.margin></Button>
             <Button fx:id="backupButton" mnemonicParsing="false" onAction="#doBackup" text="Backup progress">
                <HBox.margin>
                   <Insets right="20.0" />
                </HBox.margin>
             </Button>
-            <Button fx:id="saveAndExitButton" mnemonicParsing="false" onAction="#saveAndExit" text="Save and exit">
+            <Button fx:id="PauseButton" mnemonicParsing="false" onAction="#pause" text="Pause">
                <HBox.margin>
                   <Insets right="20.0" />
                </HBox.margin>
             </Button>
+            <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#goBack" text="Interrupt">
+               <HBox.margin>
+                  <Insets right="20.0" />
+               </HBox.margin></Button>
          </children>
       </HBox>
    </children>
