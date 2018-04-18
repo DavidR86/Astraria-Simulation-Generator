@@ -8,10 +8,16 @@ package sample.algorithms;/*
 */
 
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public abstract class ThreadOrganizer {
 
         //private double lastCalc;
         //private double lastAvg;
+
+        public AtomicBoolean isPaused;
+        public CountDownLatch pauseLatch;
 
         private boolean terminate = false;
         private double lastTime;
@@ -23,6 +29,10 @@ public abstract class ThreadOrganizer {
         protected double cycles;
         protected double duration;
         private double deltaConst;
+
+        protected double pausedTime;
+
+        private final Object lock;
 
 
     protected long l;
@@ -37,6 +47,10 @@ public abstract class ThreadOrganizer {
             this.duration = duration;
             deltaConst = 1/(cycles*60);
 
+            isPaused=new AtomicBoolean(false);
+            pausedTime=0;
+
+            lock=new Object();
 
         }
 
@@ -52,7 +66,9 @@ public abstract class ThreadOrganizer {
 
 
             while (!terminate){
-                runAlgorithm();
+                synchronized (lock){
+                    runAlgorithm();
+                }
                 // System.out.println("Algorithm done");
 
                 //System.out.println(tmp);
@@ -76,11 +92,29 @@ public abstract class ThreadOrganizer {
                     }
                 }
                 */
-
+                if (isPaused.get()){
+                    try {
+                        pauseLatch.await();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
             }
 
             endThreads();
         }
+
+    public void pauseAndResumeAlgorithm(){
+        if (!isPaused.get()){
+            pauseLatch = new CountDownLatch(1);
+            isPaused.set(true);
+            pausedTime=System.nanoTime();
+        }else {
+            isPaused.set(false);
+            pausedTime=System.nanoTime()-pausedTime;
+            pauseLatch.countDown();
+        }
+    }
 
 
         protected abstract void runAlgorithm();
@@ -109,7 +143,11 @@ public abstract class ThreadOrganizer {
             if(lastTime==0){
                 lastTime = currTime;
             }
-            double temp = currTime - lastTime;
+            double temp = (currTime - lastTime);
+            if (pausedTime!=0){
+                temp-=(pausedTime/1000000000.0);
+                pausedTime=0;
+            }
             lastTime = currTime;
 
             this.tmp = temp;
@@ -117,10 +155,13 @@ public abstract class ThreadOrganizer {
         }
 
 
-    public double getL(){
+    public long getL(){
             return l;
     }
 
+    public Object getLock(){
+        return lock;
+    }
 
 }
 

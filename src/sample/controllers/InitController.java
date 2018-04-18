@@ -10,23 +10,19 @@ package sample.controllers;/*
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import sample.Config;
 import sample.Main;
 import sample.algorithms.MultiThreadAlgorithm;
-import sample.fileManagement.AccelerationPatcher;
-import sample.fileManagement.BinWriter;
-import sample.fileManagement.TxtReader;
+import sample.fileManagement.*;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.CountDownLatch;
 
 import static sample.Config.outputFile;
 
@@ -47,10 +43,12 @@ public class InitController {
     public ProgressBar progressBar;
     public ImageView loadingImage;
 
+    private String order;
+
 
 
     private Main main;
-    private TxtReader txtReader;
+    private IniReader txtReader;
 
     private float[] x;
     private float[] y;
@@ -58,7 +56,7 @@ public class InitController {
     private float[] vx;
     private float[] vy;
     private float[] vz;
-    private float m;
+    private float[] m;
 
     private Thread writerThread;
     private MultiThreadAlgorithm multiThreadAlgorithm;
@@ -88,7 +86,7 @@ public class InitController {
         */
 
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "One or more required fields have not been correctly filled.");
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to exit?.");
         alert.showAndWait()
                 .filter(response -> response == ButtonType.OK)
                 .ifPresent(response -> exit());
@@ -240,7 +238,16 @@ public class InitController {
             @Override
             public void run() {
 
-                if (doneGenerating){
+                if (multiThreadAlgorithm.isPaused.get()){
+                    controller.stat4.setText("GENERATION PAUSED");
+                    controller.stat5.setText("GENERATION PAUSED");
+                    try {
+                        multiThreadAlgorithm.pauseLatch.await();
+                    }catch (Exception e){
+
+                        e.printStackTrace();
+                    }
+                }else if (doneGenerating){
                     controller.progressBar.setProgress((patcher.getTotalBytes()-patcher.getRemainingBytes())/patcher.getTotalBytes());
                     controller.stat5.setText((patcher.getTotalBytes()-patcher.getRemainingBytes()/4)+" / "+patcher.getTotalBytes()/4+" accelerations");
                 }else {
@@ -294,6 +301,15 @@ public class InitController {
                     }
                 }
 
+                if (secondsElapsed%Config.autoSaveInterval==0&&(secondsElapsed!=0)){
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            controller.backupProcedure();
+                        }
+                    });
+                }
+
                 secondsElapsed++;
             }
         }, 1000, 1000);
@@ -312,26 +328,64 @@ public class InitController {
         Thread.currentThread().interrupt();
     }
 
+    public void setOrder(String order){
+        this.order=order;
+    }
+
 
     private void stage1(){
-        txtReader = new TxtReader(Config.inputFile);
+
+        if (!Config.backup){
+            txtReader = new TxtReader(Config.inputFile);
+
+        }else {
+            txtReader = Config.txtReader;
+        }
+
 
         try {
-           int bodies = txtReader.read();
+           order=txtReader.read();
+
+           while (order==null||order.isEmpty()){
+               final CountDownLatch latch = new CountDownLatch(1);
+
+               Platform.runLater(new Runnable() {
+                   @Override
+                   public void run() {
+                       TextInputDialog dialog = new TextInputDialog();
+                       dialog.setHeaderText("The order of variables are not specified in the input file.\n Please specify them below.");
+                       dialog.setContentText("Use 'x', 'y', 'z', 'vx', 'vy', 'vz' and 'm' for the values. \n Use 'i' for irrelevant data. Eg. \"i m x y z vx vy vz\"");
+                       dialog.showAndWait();
+                       setOrder(dialog.getEditor().getText());
+                       latch.countDown();
+                   }
+               });
+               latch.await();
+               System.out.println(order);
+           }
+
            done1.setVisible(true);
-           msg1.setText("      {File contains "+bodies+" bodies}");
-           msg1.setVisible(true);
-           msg2.setVisible(true);
            progressBar.setProgress(0.1);
         }catch (Exception e){
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Could not read the selected text file. Make sure it is in one of the supported formats.");
-            alert.showAndWait();
-            main.getPrimaryStage().close();
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    e.printStackTrace();
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Could not read the selected text file : "+e.getMessage()+"\nRun in console to get full stack trace.");
+                    alert.showAndWait();
+                    main.getPrimaryStage().close();
+                }
+            });
+
         }
 
     }
 
     private void stage2(){
+        msg1.setText("      {File contains "+txtReader.getBodyCount(order)+" bodies}");
+        msg1.setVisible(true);
+        msg2.setVisible(true);
+
         done2.setVisible(true);
         msg3.setVisible(true);
         progressBar.setProgress(0.2);
@@ -340,15 +394,42 @@ public class InitController {
     private void stage3(){
 
         try {
-            readData();
+            //readData();
+            int bodyCount = txtReader.getBodyCount(order);
+
+            x = new float[bodyCount];
+            y = new float[bodyCount];
+            z = new float[bodyCount];
+            vx = new float[bodyCount];
+            vy = new float[bodyCount];
+            vz = new float[bodyCount];
+            m = new float[1];
+
+            txtReader.sort(x,y,z,vx,vy,vz, m);
+
+            /*
+            for (int i = 0; i<x.length; i++){
+                System.out.println("x: "+x[i]);
+                System.out.println("y: "+y[i]);
+                System.out.println("z: "+z[i]);
+            }
+            System.out.println(m[0]);
+            */
+
             done3.setVisible(true);
             msg4.setVisible(true);
             msg5.setVisible(true);
             progressBar.setProgress(0.3);
         }catch (Exception e){
-            Alert alert = new Alert(Alert.AlertType.ERROR, "An exception occurred while attempting to decompose the data into individual numbers. Make sure the input is in one of the supported formats.");
-            alert.showAndWait();
-            main.getPrimaryStage().close();
+           Platform.runLater(new Runnable() {
+               @Override
+               public void run() {
+                   e.printStackTrace();
+                   Alert alert = new Alert(Alert.AlertType.ERROR, "An exception occurred while attempting to decompose the data into individual numbers: "+e.getMessage()+"\nRun in console to get full stack trace.");
+                   alert.showAndWait();
+                   main.getPrimaryStage().close();
+               }
+           });
         }
 
 
@@ -367,9 +448,14 @@ public class InitController {
             loadingImage.setVisible(false);
             startButton.setDisable(false);
         }else {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "An exception occurred while attempting to initialize the writer thread.");
-            alert.showAndWait();
-            main.getPrimaryStage().close();
+           Platform.runLater(new Runnable() {
+               @Override
+               public void run() {
+                   Alert alert = new Alert(Alert.AlertType.ERROR, "An exception occurred while attempting to initialize the writer thread."+"\nRun in console to get full stack trace.");
+                   alert.showAndWait();
+                   main.getPrimaryStage().close();
+               }
+           });
         }
 
     }
@@ -383,9 +469,10 @@ public class InitController {
     }
 
     private void initializeAcceleration(){
-        writer = new BinWriter((short) 1, x.length, Config.bodyScale);
+        writer = new BinWriter((short) 1, x.length, Config.bodyScale, multiThreadAlgorithm);
 
         int k = x.length;
+        Config.bodyCount=k;
 
         Timer initProgressUpdate = new Timer("initProgressUpdate", true);
         initProgressUpdate.schedule(new TimerTask() {
@@ -421,7 +508,7 @@ public class InitController {
         */
 
         //double t = System.nanoTime();
-        multiThreadAlgorithm = new MultiThreadAlgorithm( x,y,z,vx,vy,vz,m,Config.simSpeed, writer, Config.simDuration, Config.constantCPS, Config.cpsPerFrame, Config.smoothingConstant);
+        multiThreadAlgorithm = new MultiThreadAlgorithm( x,y,z,vx,vy,vz,m[0],Config.simSpeed, writer, Config.simDuration, Config.constantCPS, Config.cpsPerFrame, Config.smoothingConstant);
         //System.out.println(System.nanoTime()-t);
         //thread.interrupt();
         initProgressUpdate.cancel();
@@ -429,6 +516,7 @@ public class InitController {
 
     }
 
+    /*
     private void readData() throws Exception{
         ArrayList<Float> data = txtReader.getData();
 
@@ -467,7 +555,7 @@ public class InitController {
                 k++;
             }
 
-            m = data.get(1-yot);
+            ///m = data.get(1-yot);
         }else if (txtReader.getV()==3){
             x = new float[data.size()/11];
             y = new float[data.size()/11];
@@ -476,7 +564,7 @@ public class InitController {
             vy = new float[data.size()/11];
             vz = new float[data.size()/11];
 
-            m = data.get(15);
+            //m = data.get(15);
 
             for (int i = 0; i<data.size(); i=i+11){
 
@@ -498,7 +586,7 @@ public class InitController {
             vy = new float[data.size()/7];
             vz = new float[data.size()/7];
 
-            m=data.get(0);
+            //m=data.get(0);
 
             for (int i = 0; i<data.size(); i=i+7){
 
@@ -516,4 +604,5 @@ public class InitController {
         }
         data=null;
     }
+    */
 }

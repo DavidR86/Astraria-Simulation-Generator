@@ -7,6 +7,8 @@ package sample;/*
 
 */
 
+import sample.fileManagement.IniReader;
+
 import java.io.File;
 
 public class Config {
@@ -20,6 +22,8 @@ public class Config {
     public static boolean durationSet=false;
     public static boolean cpsSet=false;
 
+    public static int autoSaveInterval=Integer.MAX_VALUE;
+
     public static float grav;
     public static float smoothingConstant;
     public static float simSpeed;
@@ -27,6 +31,10 @@ public class Config {
     public static float bodyScale=1;
 
     public static boolean backup = false;
+
+    public static int bodyCount;
+
+    public static IniReader txtReader;
 
     public static boolean allSet() {
 

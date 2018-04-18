@@ -18,11 +18,10 @@ import sample.fileManagement.BinWriter;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MultiThreadAlgorithm extends ThreadOrganizer{
-
-    //private static AtomicInteger progress = new AtomicInteger(0);
 
 
     private int amountOfThreads;
@@ -62,6 +61,10 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
         private double lastTimeMeasure;
 
         private static int progress;
+
+        private double timeWhilePaused;
+
+
 
 
 
@@ -119,11 +122,16 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
 
             l = 0;
             l2 = 0;
+
         }
 
         @Override
         protected void runAlgorithm() {
 
+
+                if (pausedTime!=0){
+                    timeWhilePaused = pausedTime;
+                }
 
                 CountDownLatch countDownLatch = new CountDownLatch(x.length);
 
@@ -131,7 +139,7 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
 
 
                 float delta = (float) ( getDelta() * simSpeed);
-                lastTimeMeasure=System.nanoTime();
+                lastTimeMeasure=System.nanoTime()-timeWhilePaused;
 
                 for (int i = 0; i < x.length; i++) {
 
@@ -155,11 +163,11 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
 
                 cpf++;
 
-                timePerC = (System.nanoTime()-lastTimeMeasure)/1000000000.0;
+                timePerC = ((System.nanoTime()-timeWhilePaused)-lastTimeMeasure)/1000000000.0;
 
                 if (!fixedDelta){
-                    if (((double) System.nanoTime())-timer>=16666666.6667){
-                        timer = (double) System.nanoTime();
+                    if (((double) System.nanoTime()-timeWhilePaused)-timer>=16666666.6667){
+                        timer = (double) System.nanoTime()-timeWhilePaused;
                         l++;
                         l2++;
 
@@ -204,15 +212,14 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
 
                         }
 
-
-
-
-
                         if (l >= (duration*60) ){
                             this.terminate();
                         }
                     }else {
                         ops++;
+                    }
+                    if (timeWhilePaused!=0){
+                        timeWhilePaused=0;
                     }
 
                     /*
@@ -222,6 +229,8 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
                     }
                     */
                 }
+
+
 
 
 
@@ -426,4 +435,10 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
     public static int getProgress(){
         return progress;
     }
+
+    public BinWriter getWriter(){
+        return writer;
+    }
+
+
 }

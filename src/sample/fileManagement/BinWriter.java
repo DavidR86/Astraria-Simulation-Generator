@@ -9,7 +9,9 @@ package sample.fileManagement;/*
 
 
 
+import sample.Config;
 import sample.algorithms.MultiThreadAlgorithm;
+import sample.algorithms.ThreadOrganizer;
 
 import java.io.*;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -31,7 +33,11 @@ public class BinWriter implements Runnable {
     private float minAcceleration;
     private float avgAcceleration;
 
-    public BinWriter(short version, int bodies, float scale){
+    private ThreadOrganizer algorithm;
+
+    private final Object lock2;
+
+    public BinWriter(short version, int bodies, float scale, ThreadOrganizer algorithm){
         queue = new LinkedBlockingQueue<Float>();
         terminate = false;
 
@@ -43,6 +49,9 @@ public class BinWriter implements Runnable {
         minAcceleration = Float.MAX_VALUE;
 
         lock = new Object();
+        lock2 = new Object();
+
+        this.algorithm=algorithm;
     }
 
     @Override
@@ -75,42 +84,53 @@ public class BinWriter implements Runnable {
 
             while (!terminate || !queue.isEmpty()) {
 
-                if (!queue.isEmpty()) {
-                    try {
+                if (algorithm!=null){
+                    if (algorithm.isPaused.get()){
+                        try {
+                            algorithm.pauseLatch.await();
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                        if (!queue.isEmpty()) {
+                            try {
 
-                        if (i >= 3) {
-                            i = 0;
+                                if (i >= 3) {
+                                    i = 0;
 
-                           // System.out.println(queue.size());
+                                    // System.out.println(queue.size());
 
-                            float currAcc = queue.take();
+                                    float currAcc = queue.take();
 
 
-                            avgAcceleration = (avgAcceleration*u+currAcc)/(u+1);
+                                    avgAcceleration = (avgAcceleration*u+currAcc)/(u+1);
 
-                            if (currAcc > maxAcceleration) {
-                                maxAcceleration = currAcc;
+                                    if (currAcc > maxAcceleration) {
+                                        maxAcceleration = currAcc;
+                                    }
+                                    if (currAcc < minAcceleration ) {
+                                        minAcceleration = currAcc;
+
+                                    }
+                                    u++;
+
+                                    stream.writeFloat(currAcc);
+
+                                } else {
+                                    float f = queue.take();
+                                    stream.writeFloat(f);
+
+                                    i++;
+                                }
+
+
+                            } catch (Exception e) {
+                                System.out.println("ERROR: Unable to write: " + e.getMessage());
                             }
-                            if (currAcc < minAcceleration ) {
-                                minAcceleration = currAcc;
-
-                            }
-                            u++;
-
-                            stream.writeFloat(currAcc);
-
-                        } else {
-                            float f = queue.take();
-                            stream.writeFloat(f);
-
-                            i++;
                         }
 
 
-                    } catch (Exception e) {
-                        System.out.println("ERROR: Unable to write: " + e.getMessage());
-                    }
-                }
 
 
             }
@@ -162,7 +182,7 @@ public class BinWriter implements Runnable {
     public boolean setFile(File output){
         try {
 
-            fStream = new FileOutputStream(output);
+            fStream = new FileOutputStream(output, Config.backup);
 
             stream = new DataOutputStream(new BufferedOutputStream(fStream));
 

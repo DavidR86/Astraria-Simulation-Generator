@@ -15,9 +15,13 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
+import sample.Config;
 import sample.Main;
 import sample.algorithms.MultiThreadAlgorithm;
+import sample.fileManagement.BackupToolWriter;
 import sample.fileManagement.BinWriter;
+
+import java.io.File;
 
 public class GenerationController {
 
@@ -31,7 +35,7 @@ public class GenerationController {
     public Text stat5;
     public Text timeRemainingLabel;
     public Button backupButton;
-    public Button saveAndExitButton;
+    public Button PauseButton;
 
     private Main main;
 
@@ -50,13 +54,12 @@ public class GenerationController {
                 .filter(response -> response == ButtonType.OK)
                 .ifPresent(response -> exit());
 
-
-
     }
 
     public void setThreadAlgorithm(MultiThreadAlgorithm multiThreadAlgorithm){
         this.multiThreadAlgorithm=multiThreadAlgorithm;
     }
+
 
     public void exit(){
 
@@ -84,16 +87,37 @@ public class GenerationController {
                 .ifPresent(response -> {
                     //backup
                 //    backup();
+                    backupProcedure();
                 });
     }
 
-    public void saveAndExit(ActionEvent actionEvent) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to interrupt the generation process?");
-        alert.showAndWait()
-                .filter(response -> response == ButtonType.OK)
-                .ifPresent(response -> {
-                    //backup
-                    exit();
-                });
+    public void backupProcedure(){
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                multiThreadAlgorithm.pauseAndResumeAlgorithm();
+                synchronized (multiThreadAlgorithm.getLock()){
+                    try {
+                        BackupToolWriter backupWriter = new BackupToolWriter(new File(Config.outputFile.getParent()+"/"+Config.outputFile.getName().substring(0,Config.outputFile.getName().length()-4)+".bck"), multiThreadAlgorithm);
+                        System.out.println("Backup file path: "+Config.outputFile.getParent()+"/"+Config.outputFile.getName().substring(0,Config.outputFile.getName().length()-4)+".bck");
+
+                        backupWriter.writeData();
+                    }catch (Exception e){
+                        e.printStackTrace();
+
+                        exit();
+                    }
+
+                }
+                multiThreadAlgorithm.pauseAndResumeAlgorithm();
+            }
+        });
+        thread.setDaemon(true);
+        thread.setName("bakcupProcedureThread");
+        thread.start();
+    }
+
+    public void pause(ActionEvent actionEvent) {
+        multiThreadAlgorithm.pauseAndResumeAlgorithm();
     }
 }

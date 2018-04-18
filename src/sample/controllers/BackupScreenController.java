@@ -7,6 +7,7 @@ package sample.controllers;/*
 
 */
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -15,8 +16,11 @@ import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import sample.Config;
 import sample.Main;
+import sample.fileManagement.BackupFileReader;
 
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 
 public class BackupScreenController {
     public TextField backupSimPath;
@@ -30,6 +34,9 @@ public class BackupScreenController {
     public Button startButton;
     public Main mainClass;
     private FileChooser fileChooser;
+
+    long elapsedFrames;
+    int bodyCount;
 
     @FXML
     public void initialize(){
@@ -70,10 +77,81 @@ public class BackupScreenController {
 
     public void startSimulation(ActionEvent actionEvent) {
         if (validate()){
+            startButton.setDisable(true);
             Config.backup=true;
+            int mult = 1;
+            if(backupDurationComboBox.getValue()!=null&&backupDurationComboBox.getValue()!="seconds"){
+                if (backupDurationComboBox.getValue()=="minutes"){
+                    mult=60;
+                }else {
+                    mult=3600;
+                }
+            }
+            Config.simDuration= Float.parseFloat(backupDurationField.getText())*mult;
+
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    setBackupData();
+                }
+            });
+            thread.start();
+
         }else {
             Alert alert = new Alert(Alert.AlertType.ERROR, "One or more required fields have not been correctly filled.");
             alert.showAndWait();
+        }
+    }
+
+    private void setBackupData(){
+        try {
+            FileInputStream ifStream=new FileInputStream(Config.inputFile);
+            DataInputStream stream=new DataInputStream(ifStream);
+
+            String statusMessage="";
+            Config.constantCPS=stream.readBoolean();
+            Config.cpsPerFrame=stream.readInt();
+            Config.autoSaveInterval=stream.readInt();
+            Config.grav=stream.readFloat();
+            Config.smoothingConstant=stream.readFloat();
+            Config.simSpeed=stream.readFloat();
+
+            bodyCount=stream.readInt();
+            elapsedFrames=stream.readLong();
+
+            ifStream.close();
+            stream.close();
+
+            statusMessage+=("Constant CPS: "+Config.constantCPS+
+                    "\nCPS per frame: "+Config.cpsPerFrame+
+                    "\nSave interval (seconds): "+Config.autoSaveInterval+
+                    "\nGrav. constant: "+Config.grav+
+                    "\nSmoothing constant: "+Config.smoothingConstant+"" +
+                    "\nSimSpeed: "+Config.simSpeed)+
+                    "\n"+
+                    "\nCopying old simulation data (This may take a long time) ...";
+
+            backupStatusField.setText(backupStatusField.getText()+statusMessage);
+
+            BackupFileReader backupFileReader = new BackupFileReader(Config.outputFile, Config.inputFile, bodyCount, elapsedFrames);
+
+            Config.outputFile=backupFileReader.copyFileContent();
+            Config.txtReader=backupFileReader;
+
+            statusMessage+=("  [DONE]");
+
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Old simulation file content successfully copied. Click continue to begin generation.");
+                    alert.showAndWait();
+                    mainClass.ChangeToInitScreen();
+                }
+            });
+
+
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -91,9 +169,9 @@ public class BackupScreenController {
 
         if (!Config.inputFile.exists()){
             backupSimPath.setStyle("-fx-border-color: red;");
+            return false;
         }else {
             backupSimPath.setStyle("");
-            return false;
         }
 
         double mult;
@@ -118,6 +196,7 @@ public class BackupScreenController {
         }catch (Exception e){
             //System.out.println("Wrong input");
             backupDurationField.setStyle("-fx-border-color: red;");
+            e.printStackTrace();
             return false;
         }
 

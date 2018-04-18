@@ -9,20 +9,52 @@ package sample.fileManagement;/*
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Scanner;
 
-public class TxtReader {
+public class TxtReader implements IniReader{
 
     private File file;
     private ArrayList<Float> data;
     private int v;
+    private String order;
+    private int bodyCount;
 
     public TxtReader(File file){
         this.file = file;
         data = new ArrayList<Float>();
     }
 
-    public int read() throws Exception{
+    @Override
+    public String read() throws Exception {
+
+        Scanner reader = new Scanner(file);
+        String currentLine;
+        String order=null;
+
+
+        while (reader.hasNextLine()){
+            currentLine=reader.nextLine();
+
+            if (currentLine.charAt(0)=='['){
+                 order = currentLine.substring(1, currentLine.length()-1);
+            }else if (currentLine.charAt(0)!='#'){
+
+
+               for (String current : currentLine.split("\\s")){
+                   if (!current.equals(" ")&&!current.isEmpty()){
+                       data.add(Float.parseFloat(current));
+                      // System.out.println(current);
+                   }
+               }
+            }
+        }
+
+        return order;
+    }
+
+    public int read2() throws Exception{
 
 
 
@@ -133,5 +165,60 @@ public class TxtReader {
 
     public int getV(){
         return v;
+    }
+
+    @Override
+    public void sort(float[] x, float[] y, float[] z, float[] vx, float[] vy, float[] vz, float [] m) {
+
+        int C = 0;
+
+
+
+        String k [] = order.split("\\s");
+        int counter=0;
+        for (String current  : k){
+            System.out.println(current);
+        }
+        for (String orderLetter : k){
+            C=0;
+            for (int i = counter; i<data.size();i+=k.length){
+
+                if(orderLetter.equals("x")){
+                    x[C]=data.get(i);
+                    C++;
+                }else if (orderLetter.equals("y")){
+                    y[C]=data.get(i);
+                    C++;
+                }else if (orderLetter.equals("z")){
+                    z[C]=data.get(i);
+                    C++;
+                }else if (orderLetter.equals("vx")){
+                    vx[C]=data.get(i);
+                    C++;
+                }else if (orderLetter.equals("vy")){
+                    vy[C]=data.get(i);
+                    C++;
+                }else if (orderLetter.equals("vz")){
+                    vz[C]=data.get(i);
+                    C++;
+                }
+                else if (orderLetter.equals("m")){
+                    m[0]=data.get(i);
+                    break;
+                }else if (orderLetter.equals("i")){
+                    break;
+                }
+            }
+            counter++;
+        }
+
+    }
+
+    @Override
+    public int getBodyCount(String order) {
+        this.order = order;
+        String k [] = order.split("\\s");
+        bodyCount=data.size()/k.length;
+        return bodyCount;
     }
 }

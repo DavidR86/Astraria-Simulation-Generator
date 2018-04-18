@@ -34,6 +34,8 @@ public class NewSimController {
     public TextField smoothingField;
     public TextField speedField;
     public ComboBox afterComboBox;
+    public TextField autoSaveTextField;
+    public CheckBox autoSaveCheckbox;
     private Main main;
 
     FileChooser fileChooser;
@@ -198,9 +200,24 @@ public class NewSimController {
             }else {
                 Config.simSpeed=Float.parseFloat(speedField.getText());
             }
+
         }catch (Exception e){
             Config.simSpeed=1;
             speedField.clear();
+        }
+        try {
+            System.out.println("field: "+autoSaveTextField.getText());
+            if (autoSaveTextField.getText().isEmpty()){
+                Config.autoSaveInterval=Integer.MAX_VALUE;
+            }else {
+                Config.autoSaveInterval=Integer.parseInt(autoSaveTextField.getText())*60;
+            }
+            System.out.println("Interval: "+Config.autoSaveInterval);
+        }catch (Exception e){
+            autoSaveTextField.clear();
+            Config.autoSaveInterval=Integer.MAX_VALUE;
+            e.printStackTrace();
+            System.out.println("Interval: "+Config.autoSaveInterval);
         }
 
         if (Config.allSet()){
@@ -212,5 +229,14 @@ public class NewSimController {
         }
 
 
+    }
+
+    public void saveProgressField(ActionEvent actionEvent) {
+        if (autoSaveCheckbox.isSelected()){
+            autoSaveTextField.setDisable(false);
+        }else {
+            autoSaveTextField.setText("");
+            autoSaveTextField.setDisable(true);
+        }
     }
 }
