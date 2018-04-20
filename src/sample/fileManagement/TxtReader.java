@@ -7,6 +7,8 @@ package sample.fileManagement;/*
 
 */
 
+import com.sun.deploy.util.StringUtils;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +38,9 @@ public class TxtReader implements IniReader{
 
         while (reader.hasNextLine()){
             currentLine=reader.nextLine();
+            if (currentLine.contains(",")){
+                currentLine = currentLine.replace(",", "");
+            }
 
             if (currentLine.charAt(0)=='['){
                  order = currentLine.substring(1, currentLine.length()-1);
@@ -43,9 +48,9 @@ public class TxtReader implements IniReader{
 
 
                for (String current : currentLine.split("\\s")){
-                   if (!current.equals(" ")&&!current.isEmpty()){
+                   if (!current.equals(" ")&&!current.isEmpty()&&!current.equals(",")){
                        data.add(Float.parseFloat(current));
-                      // System.out.println(current);
+                     // System.out.println(current);
                    }
                }
             }
