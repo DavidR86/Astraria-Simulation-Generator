@@ -74,12 +74,17 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
     public MultiThreadAlgorithm( float[] x, float[] y, float[] z, float[] vx, float[] vy, float[] vz, float m, float simSpeed, BinWriter writer, double duration, boolean fixedDelta, double cycles, float smoothingFactor){
             super(fixedDelta, cycles, duration);
 
-            if (Runtime.getRuntime().availableProcessors()==1){
-                this.amountOfThreads = Runtime.getRuntime().availableProcessors();
+            if (Config.amountOfThreads==0){
+                if (Runtime.getRuntime().availableProcessors()==1){
+                    this.amountOfThreads = Runtime.getRuntime().availableProcessors();
+                }else {
+                    this.amountOfThreads = Runtime.getRuntime().availableProcessors()-1;
+                }
             }else {
-                this.amountOfThreads = 1;
-                        //Runtime.getRuntime().availableProcessors()-1;
+                this.amountOfThreads = Config.amountOfThreads;
             }
+
+
 
             executorService = Executors.newFixedThreadPool(this.amountOfThreads);
             int k = x.length;
@@ -206,9 +211,7 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
                             writer.getQueue().add(y[a]);
                             writer.getQueue().add(z[a]);
 
-                            writer.getQueue().add(ax[a]);
-                            writer.getQueue().add(ay[a]);
-                            writer.getQueue().add(az[a]);
+                            writer.getQueue().add((float) Math.sqrt(MultiThreadAlgorithm.square(ax[a]) + MultiThreadAlgorithm.square(ay[a]) + MultiThreadAlgorithm.square(az[a])));
 
                         }
 
@@ -218,9 +221,7 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
                     }else {
                         ops++;
                     }
-                    if (timeWhilePaused!=0){
-                        timeWhilePaused=0;
-                    }
+
 
                     /*
                     if (((double) System.nanoTime()) - timer >= 3000000000D){
@@ -229,6 +230,9 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
                     }
                     */
                 }
+            if (timeWhilePaused!=0){
+                timeWhilePaused=0;
+            }
 
 
 

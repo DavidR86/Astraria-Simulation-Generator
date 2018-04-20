@@ -170,7 +170,7 @@
                         <HBox alignment="CENTER_LEFT" prefHeight="80.0" prefWidth="636.0">
                            <children>
                               <Label text="Amount of threads dedicated to algorithm" />
-                              <ComboBox prefWidth="150.0" promptText="auto detect">
+                              <ComboBox fx:id="algorithmThreads" prefWidth="150.0" promptText="auto detect">
                                  <HBox.margin>
                                     <Insets left="20.0" />
                                  </HBox.margin>

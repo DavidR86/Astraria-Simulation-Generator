@@ -36,6 +36,8 @@ public class Config {
 
     public static IniReader txtReader;
 
+    public static int amountOfThreads;
+
     public static boolean allSet() {
 
         return  (durationSet&&inputFile.exists()&&outputFile.getParentFile().exists()&&cpsSet);
