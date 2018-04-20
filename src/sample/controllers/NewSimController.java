@@ -36,6 +36,7 @@ public class NewSimController {
     public ComboBox afterComboBox;
     public TextField autoSaveTextField;
     public CheckBox autoSaveCheckbox;
+    public ComboBox algorithmThreads;
     private Main main;
 
     FileChooser fileChooser;
@@ -60,6 +61,20 @@ public class NewSimController {
                         "show statistics"
                 );
         afterComboBox.setItems(options2);
+
+        ObservableList<String> threadOptions = FXCollections.observableArrayList(
+                "auto detect",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8"
+        );
+
+        algorithmThreads.setItems(threadOptions);
     }
 
     public void setInputFilePath(ActionEvent actionEvent) {
@@ -219,6 +234,14 @@ public class NewSimController {
             e.printStackTrace();
             System.out.println("Interval: "+Config.autoSaveInterval);
         }
+
+        if (algorithmThreads.getValue()==null||algorithmThreads.getValue().toString().equals("auto detect")){
+            Config.amountOfThreads=0;
+        }else {
+            Config.amountOfThreads=Integer.parseInt(algorithmThreads.getValue().toString());
+        }
+
+        System.out.println(Config.amountOfThreads);
 
         if (Config.allSet()){
             System.out.println("All set!");
