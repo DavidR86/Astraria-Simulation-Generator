@@ -244,10 +244,10 @@ public class NewSimController {
         System.out.println(Config.amountOfThreads);
 
         if (Config.allSet()){
-            System.out.println("All set!");
+            System.out.println("All required information is correct");
             return true;
         }else {
-            System.out.println("Missing info");
+            System.out.println("Missing required information");
             return false;
         }
 

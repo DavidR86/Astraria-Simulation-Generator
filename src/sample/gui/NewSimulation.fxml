@@ -19,7 +19,7 @@
             <Insets bottom="5.0" top="10.0" />
          </VBox.margin>
       </ImageView>
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Generate new simulation">
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="New Simulation">
          <font>
             <Font name="Arial Bold" size="18.0" />
          </font>
@@ -68,7 +68,7 @@
                         <Separator prefWidth="200.0" />
                         <GridPane vgap="10.0">
                            <children>
-                              <CheckBox fx:id="cyclesCheck" mnemonicParsing="false" onAction="#cyclesField" text="Keep algoritmh cycles per frame constant at" />
+                              <CheckBox fx:id="cyclesCheck" mnemonicParsing="false" onAction="#cyclesField" text="Keep algorithm cycles per frame constant at" />
                               <TextField fx:id="cpsField" disable="true" GridPane.columnIndex="1" />
                               <Label text="Simulation duration" GridPane.rowIndex="1" />
                               <TextField fx:id="durationField" promptText="[Required]" GridPane.columnIndex="1" GridPane.rowIndex="1" />
@@ -138,7 +138,7 @@
                               </HBox>
                               <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
                                  <children>
-                                    <CheckBox mnemonicParsing="false" text="Skip confiramtion dialog at start" />
+                                    <CheckBox mnemonicParsing="false" text="Skip confirmation dialog at start" />
                                  </children>
                                  <VBox.margin>
                                     <Insets left="20.0" />
@@ -195,7 +195,7 @@
                         </HBox>
                         <HBox alignment="CENTER_LEFT" prefHeight="80.0" prefWidth="200.0">
                            <children>
-                              <RadioButton mnemonicParsing="false" text="Colorize particles automatically" />
+                              <RadioButton mnemonicParsing="false" selected="true" text="Colorize particles automatically" />
                               <RadioButton mnemonicParsing="false" text="Custom color range from">
                                  <HBox.margin>
                                     <Insets left="30.0" />

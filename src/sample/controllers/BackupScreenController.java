@@ -127,7 +127,7 @@ public class BackupScreenController {
                     "\nSave interval (seconds): "+Config.autoSaveInterval+
                     "\nGrav. constant: "+Config.grav+
                     "\nSmoothing constant: "+Config.smoothingConstant+"" +
-                    "\nSimSpeed: "+Config.simSpeed)+
+                    "\nSim. Speed: "+Config.simSpeed)+
                     "\n"+
                     "\nCopying old simulation data (This may take a long time) ...";
 

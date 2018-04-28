@@ -63,8 +63,7 @@ public class BackupFileReader implements IniReader{
         //    System.out.println("B");
        // }else {
             output=new File(fileD.getParent()+"/"+fileD.getName().substring(0,fileD.getName().length()-4)+"(new).nbd");
-        System.out.println(output.getAbsolutePath());
-            System.out.println("c");
+        //System.out.println(output.getAbsolutePath());
        // }
 
         ifStreamD=new FileInputStream(fileD);
@@ -83,8 +82,8 @@ public class BackupFileReader implements IniReader{
         Thread a = new Thread(new Runnable() {
             @Override
             public void run() {
-                System.out.println("E. "+elapsedFrames);
-                System.out.println("B.C. "+bodyCount);
+                System.out.println("Elapsed frames: "+elapsedFrames);
+                System.out.println("Body count: "+bodyCount);
                 
                 int k= (int) (16*bodyCount*(elapsedFrames))+10-(16*bodyCount);
                 try {

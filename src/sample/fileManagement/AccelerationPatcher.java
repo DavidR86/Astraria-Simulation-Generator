@@ -24,7 +24,7 @@ public class AccelerationPatcher {
 
         public AccelerationPatcher(float average, File path){
             this.average = average;
-            System.out.println(average);
+            //System.out.println(average);
 
 
             try {
@@ -80,7 +80,7 @@ public class AccelerationPatcher {
 
                 ifStream.close();
                 stream.close();
-                System.out.println(variance);
+                //System.out.println(variance);
             }catch (Exception e){
                 System.out.println("ERROR: "+e.getMessage());
             }

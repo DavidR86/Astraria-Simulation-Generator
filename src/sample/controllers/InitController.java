@@ -143,7 +143,7 @@ public class InitController {
             public void run() {
                 controller.stat3.setText("(1/3) : Simulation generation");
                 multiThreadAlgorithm.run();
-                controller.stat3.setText("(2/3) : Finishing to write data");
+                controller.stat3.setText("(2/3) : Writing remaining data");
                 writer.terminate();
 
                 synchronized (writer.getLock()){
@@ -361,7 +361,7 @@ public class InitController {
                    }
                });
                latch.await();
-               System.out.println(order);
+               //System.out.println(order);
            }
 
            done1.setVisible(true);
@@ -404,6 +404,7 @@ public class InitController {
             vy = new float[bodyCount];
             vz = new float[bodyCount];
             m = new float[1];
+            m[0]=0.00002283f;
 
             txtReader.sort(x,y,z,vx,vy,vz, m);
 
