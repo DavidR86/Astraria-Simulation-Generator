@@ -274,6 +274,7 @@ public class InitController {
                 } else {
 
                     controller.stat2.setText(multiThreadAlgorithm.timePerCycle() + " seconds");
+                    System.out.println(multiThreadAlgorithm.timePerCycle());
 
                     progressPercent = multiThreadAlgorithm.getL() / (Config.simDuration * 60D);
                     controller.progressBar.setProgress((progressPercent));
