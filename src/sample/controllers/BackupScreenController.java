@@ -38,6 +38,8 @@ public class BackupScreenController {
     long elapsedFrames;
     int bodyCount;
 
+    private boolean allSet = false;
+
     @FXML
     public void initialize(){
         ObservableList<String> options =
@@ -76,31 +78,38 @@ public class BackupScreenController {
     }
 
     public void startSimulation(ActionEvent actionEvent) {
-        if (validate()){
-            startButton.setDisable(true);
-            Config.backup=true;
-            int mult = 1;
-            if(backupDurationComboBox.getValue()!=null&&backupDurationComboBox.getValue()!="seconds"){
-                if (backupDurationComboBox.getValue()=="minutes"){
-                    mult=60;
-                }else {
-                    mult=3600;
-                }
-            }
-            Config.simDuration= Float.parseFloat(backupDurationField.getText())*mult;
 
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    setBackupData();
-                }
-            });
-            thread.start();
-
+        if (allSet){
+            mainClass.ChangeToInitScreen();
         }else {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "One or more required fields have not been correctly filled.");
-            alert.showAndWait();
+
+            if (validate()){
+                startButton.setDisable(true);
+                Config.backup=true;
+                int mult = 1;
+                if(backupDurationComboBox.getValue()!=null&&backupDurationComboBox.getValue()!="seconds"){
+                    if (backupDurationComboBox.getValue()=="minutes"){
+                        mult=60;
+                    }else {
+                        mult=3600;
+                    }
+                }
+                Config.simDuration= Float.parseFloat(backupDurationField.getText())*mult;
+
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setBackupData();
+                    }
+                });
+                thread.start();
+
+            }else {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "One or more required fields have not been correctly filled.");
+                alert.showAndWait();
+            }
         }
+
     }
 
     private void setBackupData(){
@@ -128,6 +137,7 @@ public class BackupScreenController {
                     "\nGrav. constant: "+Config.grav+
                     "\nSmoothing constant: "+Config.smoothingConstant+"" +
                     "\nSim. Speed: "+Config.simSpeed)+
+                    "\nElapsed frames: "+elapsedFrames+
                     "\n"+
                     "\nCopying old simulation data (This may take a long time) ...";
 
@@ -143,11 +153,12 @@ public class BackupScreenController {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Old simulation file content successfully copied. Click continue to begin generation.");
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Old simulation file content successfully copied. Click start again to begin generation.");
                     alert.showAndWait();
-                    mainClass.ChangeToInitScreen();
                 }
             });
+
+            allSet=true;
 
 
         }catch (Exception e){
