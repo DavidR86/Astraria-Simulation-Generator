@@ -22,7 +22,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.*;
 
 import static sample.Config.outputFile;
 
@@ -70,6 +70,8 @@ public class InitController {
         doneGenerating=false;
     }
 
+    private ScheduledExecutorService exec;
+
     public void goBack(ActionEvent actionEvent) {
 
         /*
@@ -103,7 +105,7 @@ public class InitController {
         controller.setThreadAlgorithm(multiThreadAlgorithm);
         controller.setWriter(writer);
         controller.setWriterThread(writerThread);
-        Timer generationStatusUpdate = new Timer("generationStatusUpdate", true);
+        //Timer generationStatusUpdate = new Timer("generationStatusUpdate", true);
         /*8
         Task<Void> algorithmThread = new Task<Void>() {
             @Override
@@ -158,10 +160,12 @@ public class InitController {
                 try {
                     patcher.start();
 
-                    generationStatusUpdate.cancel();
+                    //generationStatusUpdate.cancel();
+                    exec.shutdownNow();
                     controller.progressBar.setProgress(1);
                     controller.stat5.setText((patcher.getTotalBytes()/4)+" / "+patcher.getTotalBytes()/4+" accelerations");
                     Thread.currentThread().interrupt();
+                    Platform.exit();
 
                 }catch (Exception e){
                     e.printStackTrace();
@@ -173,6 +177,7 @@ public class InitController {
         algorithmThreadParent.setName("algortihmThread");
         writerThread.start();
         algorithmThreadParent.start();
+        /*
         Thread isEnded = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -184,7 +189,10 @@ public class InitController {
                 }
             }
         });
+        isEnded.setDaemon(true);
+        isEnded.setName("");
         isEnded.start();
+        */
 
         /*
         Thread algorithmThread = new Thread(new Runnable() {
@@ -230,7 +238,103 @@ public class InitController {
         });
         */
 
+        exec = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+            public Thread newThread(Runnable r) {
+                Thread t = Executors.defaultThreadFactory().newThread(r);
+                t.setDaemon(true);
+                return t;
+            }
+        });
+        exec.scheduleAtFixedRate(new Runnable() {
 
+            double progressPercent;
+            float secondsRemaining;
+            float convertedTimeLeft;
+            float convertedTime;
+            String units2;
+            String units;
+
+            Integer secondsElapsed = 0;
+
+            @Override
+            public void run() {
+
+                if (multiThreadAlgorithm.isPaused.get()) {
+                    controller.stat4.setText("GENERATION PAUSED");
+                    controller.stat5.setText("GENERATION PAUSED");
+                    try {
+                        multiThreadAlgorithm.pauseLatch.await();
+                    } catch (Exception e) {
+
+                        e.printStackTrace();
+                    }
+                } else if (doneGenerating) {
+                    controller.progressBar.setProgress((patcher.getTotalBytes() - patcher.getRemainingBytes()) / patcher.getTotalBytes());
+                    controller.stat5.setText((patcher.getTotalBytes() - patcher.getRemainingBytes() / 4) + " / " + patcher.getTotalBytes() / 4 + " accelerations");
+                } else {
+
+                    controller.stat2.setText(multiThreadAlgorithm.timePerCycle() + " seconds");
+
+                    progressPercent = multiThreadAlgorithm.getL() / (Config.simDuration * 60D);
+                    controller.progressBar.setProgress((progressPercent));
+                    controller.stat1.setText(multiThreadAlgorithm.avgCPF() + " cycles");
+                    units2 = "seconds";
+                    convertedTimeLeft = secondsElapsed;
+                    if (convertedTimeLeft >= 60) {
+                        convertedTimeLeft = convertedTimeLeft / 60;
+                        units2 = "minutes";
+                        if (convertedTimeLeft >= 60) {
+                            convertedTimeLeft = convertedTimeLeft / 60;
+                            units2 = "hours";
+                            if (convertedTimeLeft >= 24) {
+                                convertedTimeLeft = convertedTimeLeft / 24;
+                                units2 = "days";
+                            }
+                        }
+                    }
+
+
+                    controller.stat4.setText(convertedTimeLeft + " " + units2);
+                    secondsRemaining = (int) (((1D / progressPercent) * (double) secondsElapsed) - (double) secondsElapsed);
+                    units = "seconds";
+
+                    if (secondsRemaining == Integer.MAX_VALUE) {
+                        controller.stat5.setText("NaN");
+                    } else {
+                        convertedTime = secondsRemaining;
+                        if (convertedTime >= 60) {
+                            convertedTime = convertedTime / 60;
+                            units = "minutes";
+                            if (convertedTime >= 60) {
+                                convertedTime = convertedTime / 60;
+                                units = "hours";
+                                if (convertedTime >= 24) {
+                                    convertedTime = convertedTime / 24;
+                                    units = "days";
+                                }
+                            }
+                        }
+
+
+                        controller.stat5.setText(convertedTime + " " + units);
+                    }
+                }
+
+                if (secondsElapsed % Config.autoSaveInterval == 0 && (secondsElapsed != 0)) {
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            controller.backupProcedure();
+                        }
+                    });
+                }
+
+                secondsElapsed++;
+            }
+
+        }, 1, 1, TimeUnit.SECONDS);}
+
+        /*
         generationStatusUpdate.schedule(new TimerTask() {
 
             Integer secondsElapsed = 0;
@@ -280,9 +384,9 @@ public class InitController {
                     if (secondsRemaining==Integer.MAX_VALUE){
                         controller.stat5.setText("NaN");
                     }else {
-                        float convertedTime= secondsRemaining;
+                        float convertedTime = secondsRemaining;
                         if (convertedTime>=60){
-                            convertedTime=secondsRemaining/60;
+                            convertedTime=convertedTime/60;
                             units="minutes";
                             if (convertedTime>=60){
                                 convertedTime=convertedTime/60;
@@ -314,6 +418,7 @@ public class InitController {
             }
         }, 1000, 1000);
     }
+    */
 
     public void setMain(Main main){
         this.main=main;

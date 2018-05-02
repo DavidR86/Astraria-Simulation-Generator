@@ -18,6 +18,7 @@ import sample.fileManagement.BinWriter;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -86,7 +87,14 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
 
 
 
-            executorService = Executors.newFixedThreadPool(this.amountOfThreads);
+            executorService = Executors.newFixedThreadPool(this.amountOfThreads,
+                    new ThreadFactory() {
+                        public Thread newThread(Runnable r) {
+                            Thread t = Executors.defaultThreadFactory().newThread(r);
+                            t.setDaemon(true);
+                            return t;
+                        }
+                    });
             int k = x.length;
 
             this.fixedDelta = fixedDelta;
@@ -146,11 +154,14 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
                 float delta = (float) ( getDelta() * simSpeed);
                 lastTimeMeasure=System.nanoTime()-timeWhilePaused;
 
-                for (int i = 0; i < x.length; i++) {
+                if (!executorService.isTerminated()&&!executorService.isShutdown()){
+                    for (int i = 0; i < x.length; i++) {
 
-                    executorService.submit(new VelocityVerlet(countDownLatch, this, i, delta, smoothingFactor));
+                        executorService.submit(new VelocityVerlet(countDownLatch, this, i, delta, smoothingFactor));
 
+                    }
                 }
+
 
 
 
@@ -245,7 +256,8 @@ public class MultiThreadAlgorithm extends ThreadOrganizer{
 
         @Override
         public void endThreads() {
-            executorService.shutdown();
+            //executorService.shutdown();
+            executorService.shutdownNow();
         }
 
         public float[] getX() {
