@@ -41,18 +41,19 @@ public class TxtReader implements IniReader{
             if (currentLine.contains(",")){
                 currentLine = currentLine.replace(",", "");
             }
+            if (!currentLine.isEmpty()){
+                if (currentLine.charAt(0)=='['){
+                    order = currentLine.substring(1, currentLine.length()-1);
+                }else if (currentLine.charAt(0)!='#'){
 
-            if (currentLine.charAt(0)=='['){
-                 order = currentLine.substring(1, currentLine.length()-1);
-            }else if (currentLine.charAt(0)!='#'){
 
-
-               for (String current : currentLine.split("\\s")){
-                   if (!current.equals(" ")&&!current.isEmpty()&&!current.equals(",")){
-                       data.add(Float.parseFloat(current));
-                     // System.out.println(current);
-                   }
-               }
+                    for (String current : currentLine.split("\\s")){
+                        if (!current.equals(" ")&&!current.isEmpty()&&!current.equals(",")){
+                            data.add(Float.parseFloat(current));
+                            // System.out.println(current);
+                        }
+                    }
+                }
             }
         }
 
