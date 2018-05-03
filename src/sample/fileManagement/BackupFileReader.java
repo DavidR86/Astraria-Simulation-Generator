@@ -120,13 +120,6 @@ public class BackupFileReader implements IniReader{
         latch.await();
         a.interrupt();
         b.interrupt();
-        int j = bodyCount;
-        for (int i =0; i<j; i++){
-            x[i]=streamD.readFloat();
-            y[i]=streamD.readFloat();
-            z[i]=streamD.readFloat();
-            streamD.skipBytes(4);
-        }
         outputStream.close();
         streamD.close();
         ifStreamD.close();
@@ -159,6 +152,9 @@ public class BackupFileReader implements IniReader{
             m[0]=streamB.readFloat();
 
             for (int i =0; i<(bodyCount); i++){
+                x[i]=streamD.readFloat();
+                y[i]=streamD.readFloat();
+                z[i]=streamD.readFloat();
                 vx[i]=streamB.readFloat();
                 vy[i]=streamB.readFloat();
                 vz[i]=streamB.readFloat();

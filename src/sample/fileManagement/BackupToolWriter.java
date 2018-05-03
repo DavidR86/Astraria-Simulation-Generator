@@ -37,6 +37,9 @@ public class BackupToolWriter {
         stream.writeFloat(multiThreadAlgorithm.getM());
 
         for (int i = 0; i<Config.bodyCount; i++ ){
+            stream.writeFloat(multiThreadAlgorithm.getX()[i]);
+            stream.writeFloat(multiThreadAlgorithm.getY()[i]);
+            stream.writeFloat(multiThreadAlgorithm.getZ()[i]);
             stream.writeFloat(multiThreadAlgorithm.getVx()[i]);
             stream.writeFloat(multiThreadAlgorithm.getVy()[i]);
             stream.writeFloat(multiThreadAlgorithm.getVz()[i]);
