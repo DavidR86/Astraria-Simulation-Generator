@@ -131,13 +131,14 @@ public class BackupScreenController {
             ifStream.close();
             stream.close();
 
-            statusMessage+=("Constant CPS: "+Config.constantCPS+
+            statusMessage+=(
+                    "\nConstant CPS: "+Config.constantCPS+
                     "\nCPS per frame: "+Config.cpsPerFrame+
                     "\nSave interval (seconds): "+Config.autoSaveInterval+
                     "\nGrav. constant: "+Config.grav+
                     "\nSmoothing constant: "+Config.smoothingConstant+"" +
                     "\nSim. Speed: "+Config.simSpeed)+
-                    "\nElapsed frames: "+elapsedFrames+
+                    "\nElapsed frames: "+elapsedFrames+" ("+elapsedFrames/60+" seconds)"+
                     "\n"+
                     "\nCopying old simulation data (This may take a long time) ...";
 
@@ -148,7 +149,6 @@ public class BackupScreenController {
             Config.outputFile=backupFileReader.copyFileContent();
             Config.txtReader=backupFileReader;
 
-            statusMessage+=("  [DONE]");
 
             Platform.runLater(new Runnable() {
                 @Override
@@ -157,8 +157,9 @@ public class BackupScreenController {
                     alert.showAndWait();
                 }
             });
-
+            backupStatusField.setText(backupStatusField.getText()+"\"  [DONE]\"");
             allSet=true;
+            startButton.setDisable(false);
 
 
         }catch (Exception e){
