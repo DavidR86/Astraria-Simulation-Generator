@@ -9,11 +9,12 @@ package sample.controllers;/*
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ProgressBar;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sample.Config;
 import sample.Main;
@@ -36,12 +37,36 @@ public class GenerationController {
     public Text timeRemainingLabel;
     public Button backupButton;
     public Button PauseButton;
+    public TitledPane showGraphsTitledPane;
+    public HBox graphHBox;
+    public VBox mainBox;
 
     private Main main;
 
     private BinWriter writer;
     private Thread writerThread;
     private MultiThreadAlgorithm multiThreadAlgorithm;
+    private boolean dec = true;
+
+    @FXML
+    public void initialize(){
+        showGraphsTitledPane.heightProperty().addListener((obs, oldHeight, newHeight) -> {
+            mainBox.getScene().getWindow().sizeToScene();
+            //if (dec){
+            //    mainBox.setPrefHeight(412);
+            //}else {
+            //    mainBox.setPrefHeight(512);
+            //}
+            //dec=!dec;
+
+        });
+        //showGraphsTitledPane.expandedProperty().addListener((obs, oldHeight, newHeight) -> {
+        //    mainBox.getScene().getWindow().sizeToScene();
+            //mainBox.setPrefHeight(612);
+
+        //});
+    }
+
 
     public void setMain(Main main){
     this.main=main;
@@ -119,5 +144,10 @@ public class GenerationController {
 
     public void pause(ActionEvent actionEvent) {
         multiThreadAlgorithm.pauseAndResumeAlgorithm();
+    }
+
+    public void expand(MouseEvent mouseEvent) {
+        //mainBox.setPrefHeight(mainBox.getHeight()+50);
+        //showGraphsTitledPane.setPrefHeight(50);
     }
 }
