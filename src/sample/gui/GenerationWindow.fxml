@@ -128,7 +128,7 @@
          <content>
             <HBox fx:id="graphHBox" prefHeight="71.0" prefWidth="638.0">
                <children>
-                  <AreaChart prefHeight="25.0" prefWidth="450.0">
+                  <AreaChart fx:id="areaChart" prefHeight="25.0" prefWidth="450.0">
                     <xAxis>
                       <CategoryAxis side="BOTTOM" />
                     </xAxis>
@@ -136,7 +136,7 @@
                       <NumberAxis side="LEFT" />
                     </yAxis>
                   </AreaChart>
-                  <LineChart>
+                  <LineChart fx:id="lineChart">
                     <xAxis>
                       <CategoryAxis side="BOTTOM" />
                     </xAxis>

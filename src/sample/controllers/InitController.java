@@ -10,6 +10,7 @@ package sample.controllers;/*
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
@@ -273,6 +274,29 @@ public class InitController {
                     controller.stat5.setText((patcher.getTotalBytes() - patcher.getRemainingBytes() / 4) + " / " + patcher.getTotalBytes() / 4 + " accelerations");
                 } else {
 
+                    //defining a series
+                    XYChart.Series series = new XYChart.Series();
+                    series.setName("My portfolio");
+                    //populating the series with data
+
+                    series.getData().add(new XYChart.Data(1, 23));
+                    series.getData().add(new XYChart.Data(2, 14));
+                    series.getData().add(new XYChart.Data(3, 15));
+                    series.getData().add(new XYChart.Data(4, 24));
+                    series.getData().add(new XYChart.Data(5, 34));
+                    series.getData().add(new XYChart.Data(6, 36));
+                    series.getData().add(new XYChart.Data(7, 22));
+                    series.getData().add(new XYChart.Data(8, 45));
+                    series.getData().add(new XYChart.Data(9, 43));
+                    series.getData().add(new XYChart.Data(10, 17));
+                    series.getData().add(new XYChart.Data(11, 29));
+                    series.getData().add(new XYChart.Data(12, 25));
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            controller.lineChart.getData().add(series);
+                        }
+                    });
                     controller.stat2.setText(multiThreadAlgorithm.timePerCycle() + " seconds");
                     System.out.println(multiThreadAlgorithm.timePerCycle());
 

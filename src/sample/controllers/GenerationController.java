@@ -10,6 +10,8 @@ package sample.controllers;/*
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.chart.AreaChart;
+import javafx.scene.chart.LineChart;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -40,6 +42,8 @@ public class GenerationController {
     public TitledPane showGraphsTitledPane;
     public HBox graphHBox;
     public VBox mainBox;
+    public AreaChart areaChart;
+    public LineChart lineChart;
 
     private Main main;
 
@@ -50,6 +54,7 @@ public class GenerationController {
 
     @FXML
     public void initialize(){
+        lineChart.setTitle("Time per frame");
         showGraphsTitledPane.heightProperty().addListener((obs, oldHeight, newHeight) -> {
             mainBox.getScene().getWindow().sizeToScene();
             //if (dec){
@@ -58,7 +63,6 @@ public class GenerationController {
             //    mainBox.setPrefHeight(512);
             //}
             //dec=!dec;
-
         });
         //showGraphsTitledPane.expandedProperty().addListener((obs, oldHeight, newHeight) -> {
         //    mainBox.getScene().getWindow().sizeToScene();
