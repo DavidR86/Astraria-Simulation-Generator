@@ -54,7 +54,6 @@ public class GenerationController {
 
     @FXML
     public void initialize(){
-        lineChart.setTitle("Time per frame");
         showGraphsTitledPane.heightProperty().addListener((obs, oldHeight, newHeight) -> {
             mainBox.getScene().getWindow().sizeToScene();
             //if (dec){
@@ -69,6 +68,9 @@ public class GenerationController {
             //mainBox.setPrefHeight(612);
 
         //});
+
+        lineChart.setTitle("Time per frame");
+
     }
 
 
